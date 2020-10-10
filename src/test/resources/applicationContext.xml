@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/aop
+       https://www.springframework.org/schema/aop/spring-aop.xsd http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd">
+              <!--声明学生的业务类,切点
+      <bean name="stu1" class="aopAdvice.StudentImpl"/>
+              声明增强处理的类,不然它待会识别不了这个类
+      <bean name="myAdvice" class="aopAdvice.AopAdvice"/>
+          将增强处理织入切点
+      <aop:config>
+                  引用增强类作为增强处理
+          <aop:aspect ref="myAdvice">
+              切点,表达式定义执行的包中类的方法,表示要用表达式语言,expression表示切点的位置
+              <aop:pointcut id="cut1" expression="execution(* aopAdvice.StudentImpl.*(..))"/>
+              前置增强的标签,引用切点
+              <aop:before method="before" pointcut-ref="cut1"/>
+                       后置增强
+              <aop:after-returning method="afterReturning" pointcut-ref="cut1"/>
+                          环绕增强
+              <aop:around method="around" pointcut-ref="cut1"/>
+                          异常抛出增强
+              <aop:after-throwing method="afterThrowing" pointcut-ref="cut1"/>
+                          最终增强
+              <aop:after method="after" pointcut-ref="cut1"/>
+          </aop:aspect>
+      </aop:config>-->
+<!--      <aop:scoped-proxy proxy-target-class="true"/>-->
+    <context:component-scan base-package="demo7"/>
+    <context:component-scan base-package="annotation"/>
+    <!--  用CGlib代理-->
+    <aop:config proxy-target-class="true"/>
+    <!--  启动aspectJ,将增强处理织入切点-->
+    <aop:aspectj-autoproxy proxy-target-class="true"/>
+</beans>

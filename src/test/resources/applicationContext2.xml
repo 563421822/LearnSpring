@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd http://www.springframework.org/schema/aop https://www.springframework.org/schema/aop/spring-aop.xsd">
+
+    <context:component-scan base-package="dao.impl"/>
+    <context:component-scan base-package="service.impl"/>
+    <bean name="jdbcTemplate2" class="org.springframework.jdbc.core.JdbcTemplate">
+        <property name="dataSource" ref="c3p0datasource"/>
+    </bean>
+
+
+    <!--    加载配置文件-->
+    <context:property-placeholder location="c3p0.properties"/>
+
+    <!--            声明c3p0类并给属性set赋值-->
+    <bean name="c3p0datasource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+        <property name="driverClass" value="${c3p0.driverClass}"/>
+        <property name="jdbcUrl" value="${c3p0.jdbcUrl}"/>
+        <property name="user" value="${user}"/>
+        <property name="password" value="${password}"/>
+    </bean>
+    <!--    启动cglib代理-->
+    <!--    <aop:config proxy-target-class="true"/>-->
+    <!--    <aop:aspectj-autoproxy proxy-target-class="true"/>-->
+    <!-- 1   声明事务管理器对象-->
+    <bean name="manager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="c3p0datasource"/>
+    </bean>
+
+    <!-- 2   开启事务增强-->
+    <tx:advice id="interceptor" transaction-manager="manager">
+        <tx:attributes>
+            <tx:method name="save*" propagation="REQUIRED"/>
+            <tx:method name="update*" propagation="MANDATORY"/>
+            <tx:method name="delete*" propagation="MANDATORY"/>
+            <tx:method name="query*" propagation="NESTED" read-only="true"/>
+            <tx:method name="get*" propagation="NOT_SUPPORTED" read-only="true"/>
+            <tx:method name="transfer" propagation="REQUIRED"/>
+        </tx:attributes>
+    </tx:advice>
+
+    <!-- 3   将增强织入切点-->
+    <aop:config>
+        <!--        指定切点,指定执行哪个包下的类-->
+        <!--        这个包下的所有类中的所有方法(所有参数)-->
+        <aop:pointcut id="cut1" expression="execution(* service.*.*(..))"/>
+
+        <!--        配置拦截器和切点,advisor:导师,基地-->
+        <aop:advisor advice-ref="interceptor" pointcut-ref="cut1"/>
+    </aop:config>
+
+    <!--    启动事务注解扫描-->
+
+</beans>
